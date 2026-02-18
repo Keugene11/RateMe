@@ -20,22 +20,26 @@ export function Navbar() {
   const router = useRouter()
 
   useEffect(() => {
-    const supabase = createBrowserClient()
+    try {
+      const supabase = createBrowserClient()
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        setUser(user)
+        setLoading(false)
+      }).catch(() => {
+        setLoading(false)
+      })
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null)
+      })
+
+      return () => subscription.unsubscribe()
+    } catch {
       setLoading(false)
-    }).catch(() => {
-      setLoading(false)
-    })
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
+    }
   }, [])
 
   const handleSignIn = async () => {
