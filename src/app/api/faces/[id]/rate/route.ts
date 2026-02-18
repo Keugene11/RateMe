@@ -22,7 +22,7 @@ export async function POST(
     )
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
 
   // Verify face exists
   const { data: face, error: faceError } = await supabase
@@ -35,10 +35,19 @@ export async function POST(
     return NextResponse.json({ error: "Face not found" }, { status: 404 })
   }
 
+  // Optionally capture user_id (anonymous rating is fine)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
   // Insert rating
   const { error: ratingError } = await supabase
     .from("ratings")
-    .insert({ face_id: faceId, score })
+    .insert({
+      face_id: faceId,
+      score,
+      ...(user ? { user_id: user.id } : {}),
+    })
 
   if (ratingError) {
     console.error("Rating insert error:", ratingError)

@@ -3,7 +3,7 @@ import { createServerClient } from "@/lib/supabase"
 
 // GET /api/faces — returns a random face
 export async function GET(request: NextRequest) {
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
   const searchParams = request.nextUrl.searchParams
   const excludeParam = searchParams.get("exclude")
   const excludeIds = excludeParam ? excludeParam.split(",") : []
@@ -28,10 +28,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "image_url is required" }, { status: 400 })
   }
 
-  const supabase = createServerClient()
+  const supabase = await createServerClient()
+
+  // Require authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+  if (authError || !user) {
+    return NextResponse.json(
+      { error: "Authentication required" },
+      { status: 401 }
+    )
+  }
+
   const { data, error } = await supabase
     .from("faces")
-    .insert({ image_url })
+    .insert({ image_url, user_id: user.id })
     .select()
     .single()
 

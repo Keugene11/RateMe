@@ -13,16 +13,19 @@ export interface Database {
         Row: {
           id: string
           image_url: string
+          user_id: string | null
           created_at: string
         }
         Insert: {
           id?: string
           image_url: string
+          user_id?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           image_url?: string
+          user_id?: string | null
           created_at?: string
         }
         Relationships: []
@@ -32,18 +35,21 @@ export interface Database {
           id: string
           face_id: string
           score: number
+          user_id: string | null
           created_at: string
         }
         Insert: {
           id?: string
           face_id: string
           score: number
+          user_id?: string | null
           created_at?: string
         }
         Update: {
           id?: string
           face_id?: string
           score?: number
+          user_id?: string | null
           created_at?: string
         }
         Relationships: [

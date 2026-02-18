@@ -1,6 +1,7 @@
 export interface Face {
   id: string
   image_url: string
+  user_id: string | null
   created_at: string
 }
 
