@@ -71,36 +71,35 @@ export function Navbar() {
           <Button variant="ghost" asChild>
             <Link href="/upload">Upload</Link>
           </Button>
-          {!loading &&
-            (user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-8 w-8 rounded-full"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={user.user_metadata.avatar_url}
-                        alt={user.user_metadata.full_name}
-                      />
-                      <AvatarFallback>
-                        {user.user_metadata.full_name?.charAt(0) ?? "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button onClick={handleSignIn} size="sm">
-                Sign in
-              </Button>
-            ))}
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage
+                      src={user.user_metadata.avatar_url}
+                      alt={user.user_metadata.full_name}
+                    />
+                    <AvatarFallback>
+                      {user.user_metadata.full_name?.charAt(0) ?? "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleSignOut}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button onClick={handleSignIn} size="sm">
+              Sign in
+            </Button>
+          )}
         </div>
       </div>
     </nav>
