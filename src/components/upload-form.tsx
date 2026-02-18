@@ -9,7 +9,7 @@ import {
   CardDescription,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { createBrowserClient } from "@/lib/supabase"
+import { createBrowserClient } from "@/lib/supabase-browser"
 
 export function UploadForm() {
   const [file, setFile] = useState<File | null>(null)

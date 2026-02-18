@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createServerClient } from "@/lib/supabase"
+import { createServerClient } from "@/lib/supabase-server"
 
 // POST /api/faces/[id]/rate — submit a rating and return updated stats
 export async function POST(

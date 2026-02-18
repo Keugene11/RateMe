@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { createBrowserClient } from "@/lib/supabase"
+import { createBrowserClient } from "@/lib/supabase-browser"
 import type { User } from "@supabase/supabase-js"
 
 export function Navbar() {
