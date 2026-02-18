@@ -5,17 +5,53 @@ import { RatingCard } from "@/components/rating-card"
 import { RatingResult } from "@/components/rating-result"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { createBrowserClient } from "@/lib/supabase-browser"
 import type { Face, FaceStats } from "@/types"
+import type { User } from "@supabase/supabase-js"
 
-type PageState = "loading" | "rating" | "result" | "empty"
+const REQUIRED_RATINGS = 50
+
+type PageState = "loading" | "rating" | "result" | "empty" | "signed-out"
 
 export default function HomePage() {
   const [state, setState] = useState<PageState>("loading")
+  const [user, setUser] = useState<User | null>(null)
   const [face, setFace] = useState<Face | null>(null)
   const [stats, setStats] = useState<FaceStats | null>(null)
   const [userScore, setUserScore] = useState<number>(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [seenIds, setSeenIds] = useState<string[]>([])
+  const [ratingCount, setRatingCount] = useState<number>(0)
+
+  useEffect(() => {
+    const supabase = createBrowserClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user)
+      if (!user) setState("signed-out")
+    }).catch(() => {
+      setState("signed-out")
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+      if (!session?.user) setState("signed-out")
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const fetchRatingCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/rating-count")
+      if (res.ok) {
+        const data = await res.json()
+        setRatingCount(data.count)
+      }
+    } catch {
+      // ignore
+    }
+  }, [])
 
   const loadRandomFace = useCallback(async (excludeIds: string[] = []) => {
     setState("loading")
@@ -37,8 +73,21 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    loadRandomFace()
-  }, [loadRandomFace])
+    if (user) {
+      fetchRatingCount()
+      loadRandomFace()
+    }
+  }, [user, fetchRatingCount, loadRandomFace])
+
+  const handleSignIn = async () => {
+    const supabase = createBrowserClient()
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    })
+  }
 
   const handleRate = async (score: number) => {
     if (!face || isSubmitting) return
@@ -56,6 +105,7 @@ export default function HomePage() {
       if (data.success) {
         setStats(data.stats)
         setSeenIds((prev) => [...prev, face.id])
+        setRatingCount((prev) => prev + 1)
         setState("result")
       }
     } catch {
@@ -69,6 +119,18 @@ export default function HomePage() {
     setStats(null)
     setUserScore(0)
     loadRandomFace(seenIds)
+  }
+
+  if (state === "signed-out") {
+    return (
+      <div className="flex flex-col items-center justify-center pt-16 text-center">
+        <h2 className="text-2xl font-bold mb-2">Rate Faces</h2>
+        <p className="text-muted-foreground mb-4">
+          Sign in to start rating faces and unlock uploads.
+        </p>
+        <Button onClick={handleSignIn}>Sign in with Google</Button>
+      </div>
+    )
   }
 
   if (state === "loading") {
@@ -102,9 +164,25 @@ export default function HomePage() {
     )
   }
 
+  const progress = Math.min((ratingCount / REQUIRED_RATINGS) * 100, 100)
+  const showProgress = ratingCount < REQUIRED_RATINGS
+
   if (state === "result" && face && stats) {
     return (
-      <div className="flex justify-center pt-8">
+      <div className="flex flex-col items-center pt-8 gap-4">
+        {showProgress && (
+          <div className="w-full max-w-md">
+            <div className="h-2 w-full rounded-full bg-muted">
+              <div
+                className="h-2 rounded-full bg-primary transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground text-center">
+              {ratingCount} / {REQUIRED_RATINGS} ratings to unlock uploads
+            </p>
+          </div>
+        )}
         <RatingResult
           stats={stats}
           userScore={userScore}
@@ -117,7 +195,20 @@ export default function HomePage() {
 
   if (state === "rating" && face) {
     return (
-      <div className="flex justify-center pt-8">
+      <div className="flex flex-col items-center pt-8 gap-4">
+        {showProgress && (
+          <div className="w-full max-w-md">
+            <div className="h-2 w-full rounded-full bg-muted">
+              <div
+                className="h-2 rounded-full bg-primary transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground text-center">
+              {ratingCount} / {REQUIRED_RATINGS} ratings to unlock uploads
+            </p>
+          </div>
+        )}
         <RatingCard
           face={face}
           onRate={handleRate}

@@ -35,10 +35,18 @@ export async function POST(
     return NextResponse.json({ error: "Face not found" }, { status: 404 })
   }
 
-  // Optionally capture user_id (anonymous rating is fine)
+  // Require authentication
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    return NextResponse.json(
+      { error: "Authentication required" },
+      { status: 401 }
+    )
+  }
 
   // Insert rating
   const { error: ratingError } = await supabase
@@ -46,7 +54,7 @@ export async function POST(
     .insert({
       face_id: faceId,
       score,
-      ...(user ? { user_id: user.id } : {}),
+      user_id: user.id,
     })
 
   if (ratingError) {

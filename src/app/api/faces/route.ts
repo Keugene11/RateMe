@@ -42,6 +42,19 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  // Enforce 50-rating minimum
+  const { count: ratingCount } = await supabase
+    .from("ratings")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+
+  if ((ratingCount ?? 0) < 50) {
+    return NextResponse.json(
+      { error: "Rate 50 faces to unlock uploads", count: ratingCount ?? 0, required: 50 },
+      { status: 403 }
+    )
+  }
+
   const { data, error } = await supabase
     .from("faces")
     .insert({ image_url, user_id: user.id })
