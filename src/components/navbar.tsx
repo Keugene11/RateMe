@@ -25,6 +25,8 @@ export function Navbar() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user)
       setLoading(false)
+    }).catch(() => {
+      setLoading(false)
     })
 
     const {
