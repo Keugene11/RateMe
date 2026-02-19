@@ -61,7 +61,7 @@ export function Navbar() {
   return (
     <nav className="bg-background/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-14 items-center justify-between px-5">
-        <Link href="/" className="text-xl font-extrabold tracking-tight">
+        <Link href="/" className="text-xl font-bold tracking-tight">
           RateMe
         </Link>
         <div className="flex items-center gap-2">

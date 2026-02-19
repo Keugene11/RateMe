@@ -44,7 +44,7 @@ export function RatingCard({ face, onRate, isSubmitting }: RatingCardProps) {
               size="lg"
               onClick={() => handleRate(score)}
               disabled={isSubmitting}
-              className="text-lg font-extrabold aspect-square rounded-2xl"
+              className="text-lg font-bold aspect-square rounded-xl"
             >
               {score}
             </Button>

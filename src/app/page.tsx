@@ -124,7 +124,7 @@ export default function HomePage() {
   if (state === "signed-out") {
     return (
       <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
-        <h2 className="text-3xl font-extrabold tracking-tight mb-3">Rate Faces</h2>
+        <h2 className="text-3xl font-bold tracking-tight mb-3">Rate Faces</h2>
         <p className="text-muted-foreground mb-8 text-base font-light max-w-xs leading-relaxed">
           Sign in to start rating faces and unlock uploads.
         </p>
