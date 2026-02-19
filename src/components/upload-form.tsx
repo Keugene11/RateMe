@@ -96,19 +96,19 @@ export function UploadForm() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div
-          className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+          className="border border-dashed border-muted-foreground/20 rounded-2xl p-10 text-center cursor-pointer hover:bg-accent/50 hover:border-muted-foreground/40 transition-all"
           onClick={() => fileInputRef.current?.click()}
         >
           {preview ? (
             <img
               src={preview}
               alt="Preview"
-              className="max-h-64 mx-auto rounded"
+              className="max-h-64 mx-auto rounded-xl"
             />
           ) : (
             <div className="text-muted-foreground">
-              <p className="text-lg font-medium">Click to select an image</p>
-              <p className="text-sm mt-1">JPG, PNG, WebP up to 5MB</p>
+              <p className="text-base font-medium text-muted-foreground">Tap to select a photo</p>
+              <p className="text-xs mt-2 text-muted-foreground/70">JPG, PNG, WebP up to 5MB</p>
             </div>
           )}
           <input
@@ -123,7 +123,7 @@ export function UploadForm() {
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         {uploadSuccess && (
-          <p className="text-sm text-green-600">
+          <p className="text-sm text-green-600/80 font-light">
             Photo uploaded successfully! It will now appear for others to rate.
           </p>
         )}

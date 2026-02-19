@@ -29,7 +29,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#000000",
+  themeColor: "#F5F3EE",
 };
 
 export default function RootLayout({
@@ -47,7 +47,7 @@ export default function RootLayout({
       >
         <ServiceWorkerRegistrar />
         <Navbar />
-        <main className="container mx-auto px-4 py-8">{children}</main>
+        <main className="container mx-auto max-w-lg px-5 py-6">{children}</main>
       </body>
     </html>
   );

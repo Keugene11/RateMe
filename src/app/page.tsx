@@ -123,12 +123,12 @@ export default function HomePage() {
 
   if (state === "signed-out") {
     return (
-      <div className="flex flex-col items-center justify-center pt-16 text-center">
-        <h2 className="text-2xl font-bold mb-2">Rate Faces</h2>
-        <p className="text-muted-foreground mb-4">
+      <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
+        <h2 className="text-3xl font-bold tracking-tight mb-3">Rate Faces</h2>
+        <p className="text-muted-foreground mb-8 text-base font-light max-w-xs leading-relaxed">
           Sign in to start rating faces and unlock uploads.
         </p>
-        <Button onClick={handleSignIn}>Sign in with Google</Button>
+        <Button onClick={handleSignIn} size="lg" className="px-8">Sign in with Google</Button>
       </div>
     )
   }
@@ -136,7 +136,7 @@ export default function HomePage() {
   if (state === "loading") {
     return (
       <div className="flex justify-center pt-8">
-        <Card className="w-full max-w-md overflow-hidden">
+        <Card className="w-full max-w-md overflow-hidden shadow-cal-lg">
           <Skeleton className="aspect-square w-full" />
           <div className="p-6 space-y-4">
             <Skeleton className="h-4 w-3/4 mx-auto" />
@@ -153,9 +153,9 @@ export default function HomePage() {
 
   if (state === "empty") {
     return (
-      <div className="flex flex-col items-center justify-center pt-16 text-center">
-        <h2 className="text-2xl font-bold mb-2">No faces to rate</h2>
-        <p className="text-muted-foreground mb-4">
+      <div className="flex flex-col items-center justify-center pt-20 text-center px-6">
+        <h2 className="text-2xl font-bold tracking-tight mb-3">No faces to rate</h2>
+        <p className="text-muted-foreground mb-4 font-light leading-relaxed">
           {seenIds.length > 0
             ? "You've rated all available faces! Check back later."
             : "No faces have been uploaded yet. Be the first!"}
@@ -172,13 +172,13 @@ export default function HomePage() {
       <div className="flex flex-col items-center pt-8 gap-4">
         {showProgress && (
           <div className="w-full max-w-md">
-            <div className="h-2 w-full rounded-full bg-muted">
+            <div className="h-1.5 w-full rounded-full bg-muted/60">
               <div
-                className="h-2 rounded-full bg-primary transition-all"
+                className="h-1.5 rounded-full bg-primary/80 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-1 text-xs text-muted-foreground text-center">
+            <p className="mt-2 text-xs text-muted-foreground/80 text-center font-light">
               {ratingCount} / {REQUIRED_RATINGS} ratings to unlock uploads
             </p>
           </div>
@@ -198,13 +198,13 @@ export default function HomePage() {
       <div className="flex flex-col items-center pt-8 gap-4">
         {showProgress && (
           <div className="w-full max-w-md">
-            <div className="h-2 w-full rounded-full bg-muted">
+            <div className="h-1.5 w-full rounded-full bg-muted/60">
               <div
-                className="h-2 rounded-full bg-primary transition-all"
+                className="h-1.5 rounded-full bg-primary/80 transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-1 text-xs text-muted-foreground text-center">
+            <p className="mt-2 text-xs text-muted-foreground/80 text-center font-light">
               {ratingCount} / {REQUIRED_RATINGS} ratings to unlock uploads
             </p>
           </div>

@@ -59,9 +59,9 @@ export function Navbar() {
   }
 
   return (
-    <nav className="border-b bg-background">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="text-xl font-bold">
+    <nav className="bg-background/80 backdrop-blur-sm">
+      <div className="container mx-auto flex h-14 items-center justify-between px-5">
+        <Link href="/" className="text-xl font-bold tracking-tight">
           RateMe
         </Link>
         <div className="flex items-center gap-2">
