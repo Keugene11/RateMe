@@ -4,7 +4,7 @@
   "description": "Rate faces from 1-10 and upload your own",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F5F3EE",
+  "background_color": "#000000",
   "theme_color": "#F5F3EE",
   "orientation": "portrait",
   "icons": [

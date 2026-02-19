@@ -4,110 +4,111 @@ import zlib from 'zlib';
 
 function createIcon(size) {
   const pixels = Buffer.alloc(size * size * 4);
+  const s = size;
 
-  // Cal AI style: solid dark background, bold white R
-  const bgR = 24, bgG = 24, bgB = 27;
-
-  // Fill entire background (full-bleed — Android/Play Store applies its own mask)
-  for (let i = 0; i < size * size; i++) {
-    pixels[i * 4] = bgR;
-    pixels[i * 4 + 1] = bgG;
-    pixels[i * 4 + 2] = bgB;
+  // Pure black background
+  for (let i = 0; i < s * s; i++) {
     pixels[i * 4 + 3] = 255;
   }
 
-  // Draw bold white "R" lettermark
-  const s = size;
-  const strokeW = Math.round(s * 0.10);
-
-  // Letter bounds — centered
-  const lx = Math.round(s * 0.28);
-  const ty = Math.round(s * 0.22);
-  const by = Math.round(s * 0.78);
-  const midY = Math.round(s * 0.51);
-
-  // Bowl params
-  const bowlRight = Math.round(s * 0.64);
-  const bowlCy = Math.round((ty + midY) / 2);
-  const bowlOuterR = Math.round((midY - ty) / 2);
-  const bowlInnerR = bowlOuterR - strokeW;
-
   function setPixel(px, py, alpha) {
-    if (px < 0 || px >= size || py < 0 || py >= size) return;
-    const idx = (py * size + px) * 4;
+    if (px < 0 || px >= s || py < 0 || py >= s) return;
+    const idx = (py * s + px) * 4;
     const a = Math.min(1, Math.max(0, alpha));
-    pixels[idx] = Math.round(bgR * (1 - a) + 255 * a);
-    pixels[idx + 1] = Math.round(bgG * (1 - a) + 255 * a);
-    pixels[idx + 2] = Math.round(bgB * (1 - a) + 255 * a);
+    const existing = pixels[idx] / 255;
+    const blended = Math.min(1, Math.max(existing, a));
+    pixels[idx] = Math.round(255 * blended);
+    pixels[idx + 1] = Math.round(255 * blended);
+    pixels[idx + 2] = Math.round(255 * blended);
     pixels[idx + 3] = 255;
   }
 
-  // 1. Left vertical stem
-  for (let y = ty; y <= by; y++) {
-    for (let x = lx; x < lx + strokeW; x++) {
-      setPixel(x, y, 1);
-    }
-  }
-
-  // 2. Top horizontal bar (connects to bowl)
-  for (let y = ty; y < ty + strokeW; y++) {
-    for (let x = lx; x <= bowlRight; x++) {
-      setPixel(x, y, 1);
-    }
-  }
-
-  // 3. Middle horizontal bar
-  for (let y = midY - Math.floor(strokeW / 2); y <= midY + Math.floor(strokeW / 2); y++) {
-    for (let x = lx; x <= bowlRight; x++) {
-      setPixel(x, y, 1);
-    }
-  }
-
-  // 4. Bowl — right semicircle from top bar to middle bar
-  for (let y = ty; y <= midY; y++) {
-    for (let x = bowlRight - bowlOuterR; x <= bowlRight + bowlOuterR; x++) {
-      const dist = Math.hypot(x - bowlRight, y - bowlCy);
-      if (x >= bowlRight) {
-        // Right half: draw the semicircle arc
-        if (dist <= bowlOuterR + 0.5 && dist >= bowlInnerR - 0.5) {
-          const outerEdge = Math.max(0, Math.min(1, bowlOuterR - dist + 0.5));
-          const innerEdge = Math.max(0, Math.min(1, dist - bowlInnerR + 0.5));
-          setPixel(x, y, Math.min(outerEdge, innerEdge));
+  function fillCircle(cx, cy, r) {
+    for (let y = Math.floor(cy - r - 1); y <= Math.ceil(cy + r + 1); y++) {
+      for (let x = Math.floor(cx - r - 1); x <= Math.ceil(cx + r + 1); x++) {
+        const dist = Math.hypot(x - cx, y - cy);
+        if (dist <= r + 0.5) {
+          setPixel(x, y, Math.max(0, Math.min(1, r - dist + 0.5)));
         }
       }
     }
   }
 
-  // 5. Diagonal leg — from middle junction down-right to bottom
-  const legSx = lx + strokeW + strokeW * 0.3;
-  const legSy = midY + Math.floor(strokeW / 2);
-  const legEx = Math.round(s * 0.72);
-  const legEy = by;
-
-  const ldx = legEx - legSx;
-  const ldy = legEy - legSy;
-  const len = Math.hypot(ldx, ldy);
-  const halfW = strokeW / 2;
-
-  for (let y = Math.floor(legSy - strokeW); y <= Math.ceil(legEy + strokeW); y++) {
-    for (let x = Math.floor(legSx - strokeW); x <= Math.ceil(legEx + strokeW); x++) {
-      const nx = -ldy / len;
-      const ny = ldx / len;
-      const dotN = (x - legSx) * nx + (y - legSy) * ny;
-      const dotT = (x - legSx) * (ldx / len) + (y - legSy) * (ldy / len);
-
-      if (dotT >= -0.5 && dotT <= len + 0.5) {
-        const distFromCenter = Math.abs(dotN);
-        if (distFromCenter <= halfW + 0.5) {
-          const edgeAlpha = Math.max(0, Math.min(1, halfW - distFromCenter + 0.5));
-          const startAlpha = Math.max(0, Math.min(1, dotT + 0.5));
-          const endAlpha = Math.max(0, Math.min(1, len - dotT + 0.5));
-          const a = Math.min(edgeAlpha, startAlpha, endAlpha);
-          if (a > 0) setPixel(x, y, a);
+  function strokeCircle(cx, cy, r, w) {
+    const outer = r + w / 2;
+    const inner = r - w / 2;
+    for (let y = Math.floor(cy - outer - 1); y <= Math.ceil(cy + outer + 1); y++) {
+      for (let x = Math.floor(cx - outer - 1); x <= Math.ceil(cx + outer + 1); x++) {
+        const dist = Math.hypot(x - cx, y - cy);
+        if (dist >= inner - 0.5 && dist <= outer + 0.5) {
+          const outerAA = Math.max(0, Math.min(1, outer - dist + 0.5));
+          const innerAA = Math.max(0, Math.min(1, dist - inner + 0.5));
+          setPixel(x, y, Math.min(outerAA, innerAA));
         }
       }
     }
   }
+
+  function fillRect(x0, y0, x1, y1) {
+    for (let y = Math.round(y0); y <= Math.round(y1); y++) {
+      for (let x = Math.round(x0); x <= Math.round(x1); x++) {
+        setPixel(x, y, 1);
+      }
+    }
+  }
+
+  const cx = s / 2;
+  const cy = s / 2;
+  const stroke = Math.round(s * 0.045);
+
+  // --- Smiley face ---
+  // Face circle outline
+  const faceR = s * 0.30;
+  strokeCircle(cx, cy, faceR, stroke);
+
+  // Eyes — filled dots
+  const eyeR = s * 0.032;
+  const eyeY = cy - faceR * 0.28;
+  const eyeSpacing = faceR * 0.42;
+  fillCircle(cx - eyeSpacing, eyeY, eyeR);
+  fillCircle(cx + eyeSpacing, eyeY, eyeR);
+
+  // Smile — bottom arc of a circle
+  const smileCy = cy - faceR * 0.08;
+  const smileR = faceR * 0.52;
+  const smileStroke = stroke * 0.9;
+  const smileOuter = smileR + smileStroke / 2;
+  const smileInner = smileR - smileStroke / 2;
+
+  for (let y = Math.floor(smileCy); y <= Math.ceil(smileCy + smileOuter + 1); y++) {
+    for (let x = Math.floor(cx - smileOuter - 1); x <= Math.ceil(cx + smileOuter + 1); x++) {
+      if (y < smileCy) continue;
+      const dist = Math.hypot(x - cx, y - smileCy);
+      if (dist >= smileInner - 0.5 && dist <= smileOuter + 0.5) {
+        const outerAA = Math.max(0, Math.min(1, smileOuter - dist + 0.5));
+        const innerAA = Math.max(0, Math.min(1, dist - smileInner + 0.5));
+        setPixel(x, y, Math.min(outerAA, innerAA));
+      }
+    }
+  }
+
+  // --- Camera viewfinder brackets ---
+  const margin = s * 0.13;
+  const bracketLen = s * 0.11;
+  const bw = stroke;
+
+  // Top-left
+  fillRect(margin, margin, margin + bracketLen, margin + bw);
+  fillRect(margin, margin, margin + bw, margin + bracketLen);
+  // Top-right
+  fillRect(s - margin - bracketLen, margin, s - margin, margin + bw);
+  fillRect(s - margin - bw, margin, s - margin, margin + bracketLen);
+  // Bottom-left
+  fillRect(margin, s - margin - bw, margin + bracketLen, s - margin);
+  fillRect(margin, s - margin - bracketLen, margin + bw, s - margin);
+  // Bottom-right
+  fillRect(s - margin - bracketLen, s - margin - bw, s - margin, s - margin);
+  fillRect(s - margin - bw, s - margin - bracketLen, s - margin, s - margin);
 
   return pixels;
 }
