@@ -33,7 +33,7 @@ export function RatingCard({ face, onRate, isSubmitting }: RatingCardProps) {
         />
       </div>
       <CardContent className="p-6">
-        <p className="text-center text-muted-foreground mb-5 text-sm font-light tracking-wide">
+        <p className="text-center text-muted-foreground/60 mb-5 text-sm font-normal tracking-wide">
           Rate this face from 1 to 10
         </p>
         <div className="grid grid-cols-5 gap-2.5">
@@ -44,7 +44,7 @@ export function RatingCard({ face, onRate, isSubmitting }: RatingCardProps) {
               size="lg"
               onClick={() => handleRate(score)}
               disabled={isSubmitting}
-              className="text-lg font-bold aspect-square"
+              className="text-lg font-extrabold aspect-square rounded-2xl"
             >
               {score}
             </Button>

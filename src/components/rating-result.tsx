@@ -32,7 +32,7 @@ export function RatingResult({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
           <div>
-            <p className="text-white text-5xl font-bold tracking-tight">
+            <p className="text-white text-5xl font-black tracking-tight">
               {stats.average_rating}
               <span className="text-xl font-light text-white/70 ml-0.5">/10</span>
             </p>
