@@ -1,18 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import { Navbar } from "@/components/navbar";
 import { ServiceWorkerRegistrar } from "@/components/sw-registrar";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "RateMe - Rate Faces",
@@ -43,7 +32,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
+        className="antialiased"
       >
         <ServiceWorkerRegistrar />
         <Navbar />

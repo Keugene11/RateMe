@@ -33,7 +33,7 @@ export function RatingCard({ face, onRate, isSubmitting }: RatingCardProps) {
         />
       </div>
       <CardContent className="p-6">
-        <p className="text-center text-muted-foreground/60 mb-5 text-sm font-normal tracking-wide">
+        <p className="text-center text-muted-foreground/60 mb-5 text-sm font-medium tracking-wide">
           Rate this face from 1 to 10
         </p>
         <div className="grid grid-cols-5 gap-2.5">
