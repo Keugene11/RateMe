@@ -71,6 +71,11 @@ export function Navbar() {
           <Button variant="ghost" asChild>
             <Link href="/upload">Upload</Link>
           </Button>
+          {user && (
+            <Button variant="ghost" asChild>
+              <Link href="/profile">Profile</Link>
+            </Button>
+          )}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -90,6 +95,9 @@ export function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                  Profile
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   Log out
                 </DropdownMenuItem>

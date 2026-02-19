@@ -55,6 +55,35 @@ export async function POST(request: NextRequest) {
   //   )
   // }
 
+  // One photo per user — check if user already has a face
+  const { data: existing } = await supabase
+    .from("faces")
+    .select("id, image_url")
+    .eq("user_id", user.id)
+    .single()
+
+  if (existing) {
+    // Delete old file from storage
+    const oldPath = existing.image_url.split("/faces/").pop()
+    if (oldPath) {
+      await supabase.storage.from("faces").remove([oldPath])
+    }
+
+    // Update existing record with new image
+    const { data, error } = await supabase
+      .from("faces")
+      .update({ image_url })
+      .eq("id", existing.id)
+      .select()
+      .single()
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, face: data, replaced: true })
+  }
+
   const { data, error } = await supabase
     .from("faces")
     .insert({ image_url, user_id: user.id })
